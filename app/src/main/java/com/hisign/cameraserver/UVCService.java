@@ -54,32 +54,36 @@ public class UVCService extends BaseService {
 	private NotificationManager mNotificationManager;
 	private CameraServer mCameraServer;
 
+	private int mVlCamera;
+	private int mIrCamera;
 
-
+	private static byte[] data_r = new byte[640*480*4];//= new byte[frame.remaining()];
+	private static byte[] data_l = new byte[640*480*4];//= new byte[frame.remaining()];
 
 	final RemoteCallbackList<CameraCallback> mCallbacks = new RemoteCallbackList<>();
 
+	private final byte[] data0 = new byte[460800];
+	private int date0_index ;
+	private final byte[] data1 = new byte[460800];
+	private int date1_index ;
+
 	private IFrameCallback mIFrameCallback_Obj = new IFrameCallback() {
+
 		@Override
 		public void onFrame(ByteBuffer frame) {
-			Log.d(TAG,"ByteBuffer onFrame");
+			//Log.d(TAG,"ByteBuffer onFrame " + frame.remaining());
+			//byte[] data = new byte[frame.remaining()];
+			if (frame.remaining()>0)
+			{
 
-			byte[] data = new byte[frame.remaining()];
-			frame.get(data, 0, data.length);
-			Log.d(TAG, "data111 length="+data.length);
+				if (date0_index %2 ==0){
+					Log.d(TAG,"onFrame: remaining=" + frame.remaining() );
+					frame.get(data0, 0, frame.remaining());
+					callback(data0, 0);
 
-			//Bitmap bitmapcute = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
-
-			//  YUV
-		/*	YuvImage image =new YuvImage(data, ImageFormat.NV21, 400, 200,null);
-
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			image.compressToJpeg(new Rect(0, 0, 400, 200), 50, out);
-			byte[] bytes = out.toByteArray();*/
-
-			//jpeg
-			callback(data, 0);
+				}
+				date0_index++;
+			}
 		}
 	};
 
@@ -88,23 +92,16 @@ public class UVCService extends BaseService {
 		@Override
 		public void onFrame(ByteBuffer frame) {
 			Log.d(TAG,"ByteBuffer onFrame");
+			if (frame.remaining() > 0)
+			{
+				if (date1_index %2 ==0){
+					Log.d(TAG,"111remaining is : " + frame.remaining() );
+					frame.get(data1, 0, frame.remaining());
+					callback(data1, 1);
+				}
+				date1_index++;
 
-			byte[] data = new byte[frame.remaining()];
-			frame.get(data, 0, data.length);
-			Log.d(TAG, "data111 length="+data.length);
-
-			//Bitmap bitmapcute = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
-
-			//  YUV
-		/*	YuvImage image =new YuvImage(data, ImageFormat.NV21, 400, 200,null);
-
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			image.compressToJpeg(new Rect(0, 0, 400, 200), 50, out);
-			byte[] bytes = out.toByteArray();*/
-
-			//jpeg
-			callback(data, 1);
+			}
 		}
 	};
 
@@ -349,6 +346,10 @@ public class UVCService extends BaseService {
 		@Override
 		public int openCamera() throws RemoteException {
 			if (DEBUG) Log.d(TAG, "openCamera");
+			/*Log.d(TAG,"vl is : " + vl + " ir is ; " + ir);
+			mVlCamera =  Integer.parseInt(vl);
+			mIrCamera =  Integer.parseInt(ir);
+			Log.d(TAG,"mVlCamera is : " + mVlCamera + " , mIrCamera is : " + mIrCamera);*/
 			final List<UsbDevice> list = mUSBMonitor.getDeviceList();
 			//依次打开2个摄像头
 			UsbDevice device0 = list.get(0);

@@ -370,7 +370,7 @@ public final class CameraServer extends Handler {
 
 
 		public void setIFrameCallback(IFrameCallback iFrameCallback_Obj){
-			mUVCCamera.setFrameCallback(iFrameCallback_Obj,UVCCamera.PIXEL_FORMAT_NV21);//PIXEL_FORMAT_RAW);//PIXEL_FORMAT_YUV);
+			mUVCCamera.setFrameCallback(iFrameCallback_Obj,UVCCamera.PIXEL_FORMAT_NV21);//PIXEL_FORMAT_NV21);//PIXEL_FORMAT_RAW);//PIXEL_FORMAT_YUV);
 			Log.d(TAG,"Thread  setIFrameCallback");
 		//	mUVCCamera.setFrameCallback(mCallbacks, UVCCamera.PIXEL_FORMAT_YUV);
 		}
