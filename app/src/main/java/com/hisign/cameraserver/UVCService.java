@@ -79,7 +79,9 @@ public class UVCService extends BaseService {
 				if (date0_index %2 ==0){
 					Log.d(TAG,"onFrame: remaining=" + frame.remaining() );
 					frame.get(data0, 0, frame.remaining());
-					callback(data0, 0);
+					//callback(data0, 0);
+					Log.d(TAG,"mVlCamera = " + mVlCamera);
+					callback(data0,mVlCamera);
 
 				}
 				date0_index++;
@@ -97,7 +99,11 @@ public class UVCService extends BaseService {
 				if (date1_index %2 ==0){
 					Log.d(TAG,"111remaining is : " + frame.remaining() );
 					frame.get(data1, 0, frame.remaining());
-					callback(data1, 1);
+					//callback(data1, 1);
+					Log.d(TAG,"mIrCamera = " + mIrCamera);
+
+					callback(data1,mIrCamera);
+
 				}
 				date1_index++;
 
@@ -340,8 +346,10 @@ public class UVCService extends BaseService {
 
 //	final RemoteCallbackList<IUVCServiceCallback> mCallbacks = new RemoteCallbackList <>();
 
+	private boolean isSwap;
 	private final CameraInterface.Stub mBasicBinder = new CameraInterface.Stub() {
 		private CameraCallback mCallback;
+
 
 		@Override
 		public int openCamera(int pid_0,int pid_1) throws RemoteException {
@@ -353,6 +361,18 @@ public class UVCService extends BaseService {
 			final List<UsbDevice> list = mUSBMonitor.getDeviceList();
 			//依次打开2个摄像头
 			UsbDevice device0 = list.get(0);
+			Log.d(TAG,"pid_0 = " + pid_0 + "device0.getProductId()  = " + device0.getProductId() );
+			if (device0.getProductId() ==pid_0 ){
+				isSwap = false;
+				mVlCamera = 0;
+				mIrCamera = 1;
+			}else {
+				isSwap = true;
+				mVlCamera = 1;
+				mIrCamera = 0;
+			}
+			Log.d(TAG,"mVlCamera = " + mVlCamera + " ,mIrCamera =  " + mIrCamera);
+
 			final int serviceId0 = device0.hashCode();
 			final CameraServer server0 = getCameraServer(serviceId0);
 			if (server0 == null) {
