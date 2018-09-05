@@ -61,8 +61,6 @@ public final class CameraServer extends Handler {
 	
 	private int mFrameWidth = DEFAULT_WIDTH, mFrameHeight = DEFAULT_HEIGHT;
 
-	private static ByteBuffer mFrame;
-
     private static class CallbackCookie {
 		boolean isConnected;
 	}
@@ -144,18 +142,18 @@ public final class CameraServer extends Handler {
 		}
 
 	}
-
+/*
 	public void connectSlave() {
 		if (DEBUG) Log.d(TAG, "connectSlave:");
 		final CameraThread thread = mWeakThread.get();
 		if (thread.isCameraOpened()) {
 			processOnCameraStart();
 		}
-	}
+	}*/
 
 	public void disconnect() {
 		if (DEBUG) Log.d(TAG, "disconnect:");
-		stopRecording();
+		//stopRecording();
 		final CameraThread thread = mWeakThread.get();
 		if (thread == null) return;
 		synchronized (thread.mSync) {
@@ -181,37 +179,24 @@ public final class CameraServer extends Handler {
 		return (thread != null) && thread.isRecording();
 	}
 
-	public void addSurface(final int id) {
+/*	public void addSurface(final int id) {
 		if (DEBUG) Log.d(TAG, "addSurface:id=" + id );
-		/*if (mRendererHolder != null)
-			mRendererHolder.addSurface(id);*/
+
 	}
 
 	public void removeSurface(final int id) {
 		if (DEBUG) Log.d(TAG, "removeSurface:id=" + id);
 		if (mRendererHolder != null)
 			mRendererHolder.removeSurface(id);
-	}
+	}*/
 	private IFrameCallback mIFrameCallback_Obj;
 
 	public void setThreadCallback(IFrameCallback iFrameCallback_Obj){
 		mIFrameCallback_Obj= iFrameCallback_Obj;
-		/*if (iFrameCallback_Obj != null){
-			final CameraThread thread = mWeakThread.get();
-			thread.setIFrameCallback(iFrameCallback_Obj);
-		}*/
-
-
 	}
 
 
-	//xxF
-	public ByteBuffer test(final int id){
-		Log.d(TAG,"test");
-		return mFrame;
-	}
-
-	public void startRecording() {
+/*	public void startRecording() {
 		if (!isRecording())
 			sendEmptyMessage(MSG_CAPTURE_START);
 	}
@@ -219,14 +204,14 @@ public final class CameraServer extends Handler {
 	public void stopRecording() {
 		if (isRecording())
 			sendEmptyMessage(MSG_CAPTURE_STOP);
-	}
+	}*/
 
-	public void captureStill(final String path) {
+	/*public void captureStill(final String path) {
 		if (mRendererHolder != null) {
 			mRendererHolder.captureStill(path);
 			sendMessage(obtainMessage(MSG_CAPTURE_STILL, path));
 		}
-	}
+	}*/
 
 //********************************************************************************
 	private void processOnCameraStart() {
@@ -236,9 +221,6 @@ public final class CameraServer extends Handler {
 			for (int i = 0; i < n; i++) {
 				if (!((CallbackCookie)mCallbacks.getBroadcastCookie(i)).isConnected)
 				try {
-					//mCallbacks.getBroadcastItem(i).onConnected();
-					//mCallbacks.getBroadcastItem(i).onFrame();
-
 					//mUVCCamera.setFrameCallback(mCallbacks, UVCCamera.PIXEL_FORMAT_YUV);
 
 					((CallbackCookie)mCallbacks.getBroadcastCookie(i)).isConnected = true;
@@ -300,16 +282,6 @@ public final class CameraServer extends Handler {
 		case MSG_PREVIEW_STOP:
 			thread.handleStopPreview();
 			break;
-		case MSG_CAPTURE_STILL:
-			thread.handleCaptureStill((String)msg.obj);
-			break;
-		case MSG_CAPTURE_START:
-			Log.d(TAG,"MSG_CAPTURE_START");
-			thread.handleStartRecording();
-			break;
-		case MSG_CAPTURE_STOP:
-			thread.handleStopRecording();
-			break;
 		case MSG_MEDIA_UPDATE:
 			thread.handleUpdateMedia((String)msg.obj);
 			break;
@@ -370,7 +342,7 @@ public final class CameraServer extends Handler {
 
 
 		public void setIFrameCallback(IFrameCallback iFrameCallback_Obj){
-			mUVCCamera.setFrameCallback(iFrameCallback_Obj,UVCCamera.PIXEL_FORMAT_NV21);//PIXEL_FORMAT_NV21);//PIXEL_FORMAT_RAW);//PIXEL_FORMAT_YUV);
+			mUVCCamera.setFrameCallback(iFrameCallback_Obj,UVCCamera.PIXEL_FORMAT_NV21);
 			Log.d(TAG,"Thread  setIFrameCallback");
 		//	mUVCCamera.setFrameCallback(mCallbacks, UVCCamera.PIXEL_FORMAT_YUV);
 		}
@@ -422,7 +394,7 @@ public final class CameraServer extends Handler {
 
 		public void handleClose() {
 			if (DEBUG) Log.d(TAG_THREAD, "handleClose:");
-			handleStopRecording();
+			//handleStopRecording();
 			boolean closed = false;
 			synchronized (mSync) {
 				if (mUVCCamera != null) {
@@ -454,7 +426,6 @@ public final class CameraServer extends Handler {
 					}
 				}
 				if (mUVCCamera == null) return;
-			//	mUVCCamera.setFrameCallback(mIFrameCallback, UVCCamera.PIXEL_FORMAT_YUV);
 				mFrameWidth = width;
 				mFrameHeight = height;
 				mUVCCamera.setPreviewDisplay(surface);
@@ -497,44 +468,7 @@ public final class CameraServer extends Handler {
 				}
 			}
 		}
-		
-		public void handleCaptureStill(final String path) {
-			if (DEBUG) Log.d(TAG_THREAD, "handleCaptureStill:");
 
-			mSoundPool.play(mSoundId, 0.2f, 0.2f, 0, 0, 1.0f);	// play shutter sound
-		}
-
-		public void handleStartRecording() {
-			if (DEBUG) Log.d(TAG_THREAD, "handleStartRecording:");
-			try {
-				if ((mUVCCamera == null) || (mMuxer != null)) return;
-				mMuxer = new MediaMuxerWrapper(".mp4");	// if you record audio only, ".m4a" is also OK.
-//				new MediaSurfaceEncoder(mFrameWidth, mFrameHeight, mMuxer, mMediaEncoderListener);
-				new MediaSurfaceEncoder(mMuxer, mFrameWidth, mFrameHeight, mMediaEncoderListener);
-				if (true) {
-					// for audio capturing
-					new MediaAudioEncoder(mMuxer, mMediaEncoderListener);
-				}
-				mMuxer.prepare();
-				mMuxer.startRecording();
-			} catch (final IOException e) {
-				Log.e(TAG, "startCapture:", e);
-			}
-		}
-
-		public void handleStopRecording() {
-			if (DEBUG) Log.d(TAG_THREAD, "handleStopRecording:mMuxer=" + mMuxer);
-			if (mMuxer != null) {
-				synchronized (mSync) {
-					if (mUVCCamera != null) {
-						mUVCCamera.stopCapture();
-					}
-				}
-				mMuxer.stopRecording();
-				mMuxer = null;
-				// you should not wait here
-			}
-		}
 
 		public void handleUpdateMedia(final String path) {
 			if (DEBUG) Log.d(TAG_THREAD, "handleUpdateMedia:path=" + path);
@@ -564,54 +498,6 @@ public final class CameraServer extends Handler {
 			if (!mIsRecording)
 				Looper.myLooper().quit();
 		}
-
-
-
-		private final MediaEncoder.MediaEncoderListener mMediaEncoderListener = new MediaEncoder.MediaEncoderListener() {
-			@Override
-			public void onPrepared(final MediaEncoder encoder) {
-				if (DEBUG) Log.d(TAG, "onPrepared:encoder=" + encoder);
-				mIsRecording = true;
-				if (encoder instanceof MediaSurfaceEncoder)
-				try {
-					mVideoEncoder = (MediaSurfaceEncoder)encoder;
-					final Surface encoderSurface = mVideoEncoder.getInputSurface();
-					mEncoderSurfaceId = encoderSurface.hashCode();
-					mHandler.mRendererHolder.addSurface(mEncoderSurfaceId, encoderSurface, true);
-				} catch (final Exception e) {
-					Log.e(TAG, "onPrepared:", e);
-				}
-			}
-
-			@Override
-			public void onStopped(final MediaEncoder encoder) {
-				if (DEBUG) Log.v(TAG_THREAD, "onStopped:encoder=" + encoder);
-				if ((encoder instanceof MediaSurfaceEncoder))
-				try {
-					mIsRecording = false;
-					if (mEncoderSurfaceId > 0) {
-						try {
-							mHandler.mRendererHolder.removeSurface(mEncoderSurfaceId);
-						} catch (final Exception e) {
-							Log.w(TAG, e);
-						}
-					}
-					mEncoderSurfaceId = -1;
-					synchronized (mSync) {
-						if (mUVCCamera != null) {
-							mUVCCamera.stopCapture();
-						}
-					}
-					mVideoEncoder = null;
-					final String path = encoder.getOutputPath();
-					if (!TextUtils.isEmpty(path)) {
-						mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_MEDIA_UPDATE, path), 1000);
-					}
-				} catch (final Exception e) {
-					Log.e(TAG, "onPrepared:", e);
-				}
-			}
-		};
 
 		/**
 		 * prepare and load shutter sound for still image capturing

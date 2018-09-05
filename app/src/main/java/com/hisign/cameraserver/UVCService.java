@@ -52,13 +52,9 @@ public class UVCService extends BaseService {
 
 	private USBMonitor mUSBMonitor;
 	private NotificationManager mNotificationManager;
-	private CameraServer mCameraServer;
 
 	private int mVlCamera;
 	private int mIrCamera;
-
-	private static byte[] data_r = new byte[640*480*4];//= new byte[frame.remaining()];
-	private static byte[] data_l = new byte[640*480*4];//= new byte[frame.remaining()];
 
 	final RemoteCallbackList<CameraCallback> mCallbacks = new RemoteCallbackList<>();
 
@@ -101,9 +97,7 @@ public class UVCService extends BaseService {
 					frame.get(data1, 0, frame.remaining());
 					//callback(data1, 1);
 					Log.d(TAG,"mIrCamera = " + mIrCamera);
-
 					callback(data1,mIrCamera);
-
 				}
 				date1_index++;
 
@@ -116,7 +110,6 @@ public class UVCService extends BaseService {
 
 		final int N = mCallbacks.beginBroadcast();
 		Log.d(TAG,"n is : " + N);
-//        LogUtil.i(TAG, "callback N="+N);
 		for (int i=0; i<N; i++) {
 			Log.d(TAG,"inner for");
 			try {
@@ -174,10 +167,6 @@ public class UVCService extends BaseService {
 			Log.i(TAG, "return mBasicBinder");
 			return mBasicBinder;
 		}
-		/*if (IUVCSlaveService.class.getName().equals(action)) {
-			Log.i(TAG, "return mSlaveBinder");
-			return mSlaveBinder;
-		}*/
 		return null;
 	}
 
@@ -346,7 +335,6 @@ public class UVCService extends BaseService {
 
 //	final RemoteCallbackList<IUVCServiceCallback> mCallbacks = new RemoteCallbackList <>();
 
-	private boolean isSwap;
 	private final CameraInterface.Stub mBasicBinder = new CameraInterface.Stub() {
 		private CameraCallback mCallback;
 
@@ -354,20 +342,14 @@ public class UVCService extends BaseService {
 		@Override
 		public int openCamera(int pid_0,int pid_1) throws RemoteException {
 			if (DEBUG) Log.d(TAG, "openCamera");
-			/*Log.d(TAG,"vl is : " + vl + " ir is ; " + ir);
-			mVlCamera =  Integer.parseInt(vl);
-			mIrCamera =  Integer.parseInt(ir);
-			Log.d(TAG,"mVlCamera is : " + mVlCamera + " , mIrCamera is : " + mIrCamera);*/
 			final List<UsbDevice> list = mUSBMonitor.getDeviceList();
 			//依次打开2个摄像头
 			UsbDevice device0 = list.get(0);
 			Log.d(TAG,"pid_0 = " + pid_0 + "device0.getProductId()  = " + device0.getProductId() );
 			if (device0.getProductId() ==pid_0 ){
-				isSwap = false;
 				mVlCamera = 0;
 				mIrCamera = 1;
 			}else {
-				isSwap = true;
 				mVlCamera = 1;
 				mIrCamera = 0;
 			}
@@ -490,65 +472,7 @@ public class UVCService extends BaseService {
 		}
 
 
-
-/*
-		@Override
-		public void addSurface(final int serviceId) throws RemoteException {
-			if (DEBUG) Log.d(TAG, "mBasicBinder#addSurface:id=" );
-			final CameraServer server = getCameraServer(serviceId);
-			//if (server != null)
-				//server.addSurface(id_surface, surface, isRecordable, null);
-			   // server.setThreadCallback(mIFrameCallback_Obj);
-			//server.setThreadCallback(mIFrameCallback_Obj);
-		}
-
-		@Override
-		public void removeSurface(final int serviceId, final int id_surface) throws RemoteException {
-			if (DEBUG) Log.d(TAG, "mBasicBinder#removeSurface:id=" + id_surface);
-			final CameraServer server = getCameraServer(serviceId);
-			*/
-/*if (server != null)
-				server.removeSurface(id_surface);*//*
-
-		}
-*/
-
     };
 
-//********************************************************************************
-/*	private final IUVCSlaveService.Stub mSlaveBinder = new IUVCSlaveService.Stub() {
-		@Override
-		public boolean isSelected(final int serviceID) throws RemoteException {
-			return getCameraServer(serviceID) != null;
-		}
-
-		@Override
-		public boolean isConnected(final int serviceID) throws RemoteException {
-			final CameraServer server = getCameraServer(serviceID);
-			return server != null && server.isConnected();
-		}
-
-		@Override
-		public void addSurface(final int serviceID, final int id_surface, final Surface surface, final boolean isRecordable, final IUVCServiceOnFrameAvailable callback) throws RemoteException {
-			if (DEBUG) Log.d(TAG, "mSlaveBinder#addSurface:id=" + id_surface + ",surface=" + surface);
-			final CameraServer server = getCameraServer(serviceID);
-			if (server != null) {
-				server.addSurface(id_surface, surface, isRecordable, callback);
-			} else {
-				Log.e(TAG, "failed to get CameraServer:serviceID=" + serviceID);
-			}
-		}
-
-		@Override
-		public void removeSurface(final int serviceID, final int id_surface) throws RemoteException {
-			if (DEBUG) Log.d(TAG, "mSlaveBinder#removeSurface:id=" + id_surface);
-			final CameraServer server = getCameraServer(serviceID);
-			if (server != null) {
-				server.removeSurface(id_surface);
-			} else {
-				Log.e(TAG, "failed to get CameraServer:serviceID=" + serviceID);
-			}
-		}
-	};*/
 
 }
