@@ -344,7 +344,7 @@ public class UVCService extends BaseService {
 		private CameraCallback mCallback;
 
 		@Override
-		public int openCamera() throws RemoteException {
+		public int openCamera(int pid_0,int pid_1) throws RemoteException {
 			if (DEBUG) Log.d(TAG, "openCamera");
 			/*Log.d(TAG,"vl is : " + vl + " ir is ; " + ir);
 			mVlCamera =  Integer.parseInt(vl);
