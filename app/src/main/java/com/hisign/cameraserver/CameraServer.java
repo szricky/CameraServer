@@ -196,22 +196,7 @@ public final class CameraServer extends Handler {
 	}
 
 
-/*	public void startRecording() {
-		if (!isRecording())
-			sendEmptyMessage(MSG_CAPTURE_START);
-	}
 
-	public void stopRecording() {
-		if (isRecording())
-			sendEmptyMessage(MSG_CAPTURE_STOP);
-	}*/
-
-	/*public void captureStill(final String path) {
-		if (mRendererHolder != null) {
-			mRendererHolder.captureStill(path);
-			sendMessage(obtainMessage(MSG_CAPTURE_STILL, path));
-		}
-	}*/
 
 //********************************************************************************
 	private void processOnCameraStart() {
