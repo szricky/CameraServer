@@ -33,6 +33,7 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Surface;
 
 import com.serenegiant.common.BaseService;
 
@@ -72,7 +73,7 @@ public class UVCService extends BaseService {
 			if (frame.remaining()>0)
 			{
 
-				if (date0_index %2 ==0){
+				if (date0_index %2 == 0){//%2 ==0){
 					Log.d(TAG,"onFrame: remaining=" + frame.remaining() );
 					frame.get(data0, 0, frame.remaining());
 					//callback(data0, 0);
@@ -92,7 +93,7 @@ public class UVCService extends BaseService {
 			Log.d(TAG,"ByteBuffer onFrame");
 			if (frame.remaining() > 0)
 			{
-				if (date1_index %2 ==0){
+				if (date1_index %2 == 0){//2 ==0){
 					Log.d(TAG,"111remaining is : " + frame.remaining() );
 					frame.get(data1, 0, frame.remaining());
 					//callback(data1, 1);
@@ -117,6 +118,7 @@ public class UVCService extends BaseService {
 					Log.d(TAG," getBroadcastItem1");
 					mCallbacks.getBroadcastItem(i).onFrame(data,camera);
 					Log.d(TAG," getBroadcastItem2");
+
 
 				}
 			}
@@ -363,7 +365,7 @@ public class UVCService extends BaseService {
 			server0.connect();
 			Log.d(TAG,"serviceId0 ,  is : " + serviceId0 + " , " );
 
-			UsbDevice device1 = list.get(1);
+		/*	UsbDevice device1 = list.get(1);
 			final int serviceId1 = device1.hashCode();
 			Log.d(TAG,"before getCameraServer serviceId1");
 			final CameraServer server1 = getCameraServer(serviceId1);
@@ -374,7 +376,7 @@ public class UVCService extends BaseService {
 				throw new IllegalArgumentException("invalid serviceId");
 			}
 			server1.connect();
-			Log.d(TAG,"serviceId1 ,  is : " + serviceId1 + " , " );
+			Log.d(TAG,"serviceId1 ,  is : " + serviceId1 + " , " );*/
 
             return 0;
 		}
@@ -430,7 +432,7 @@ public class UVCService extends BaseService {
 
 			}
 			//return serviceId;
-			Log.d(TAG,"before device1");
+			/*Log.d(TAG,"before device1");
 			UsbDevice device1 = list.get(1);
 			final int serviceId1 = device1.hashCode();
 			CameraServer server1 = null;
@@ -461,7 +463,7 @@ public class UVCService extends BaseService {
 				mCallbacks.register(cb);
 				server1.setThreadCallback(mIFrameCallback_Obj_R);
 
-			}
+			}*/
 
 
 		}
@@ -471,8 +473,27 @@ public class UVCService extends BaseService {
 
 		}
 
+		@Override
+		public void addSurface(int serviceId, int id_surface, Surface surface, boolean isRecordable) throws RemoteException {
+		/*	if (DEBUG) Log.d(TAG, "mSlaveBinder#addSurface:id=" + id_surface + ",surface=" + surface);
+			final CameraServer server = getCameraServer(serviceId);
+			if (server != null) {
+				server.addSurface(id_surface, surface, isRecordable);
+			} else {
+				Log.e(TAG, "failed to get CameraServer:serviceID=" + serviceId);
+			}*/
 
-    };
+            if (DEBUG) Log.d(TAG, "mBasicBinder#addSurface:id=" + id_surface + ",surface=" + surface);
+            final CameraServer server = getCameraServer(serviceId);
+            if (server != null)
+                server.addSurface(id_surface, surface, isRecordable);
+
+		}
+
+
+
+
+	};
 
 
 }

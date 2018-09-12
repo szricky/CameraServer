@@ -179,7 +179,14 @@ public final class CameraServer extends Handler {
 		return (thread != null) && thread.isRecording();
 	}
 
-/*	public void addSurface(final int id) {
+	public void addSurface(final int id, final Surface surface, final boolean isRecordable) {
+		if (DEBUG) Log.d(TAG, "addSurface:id=" + id +",surface=" + surface);
+		if (mRendererHolder != null)
+			mRendererHolder.addSurface(id, surface, isRecordable);
+	}
+
+
+	/*	public void addSurface(final int id) {
 		if (DEBUG) Log.d(TAG, "addSurface:id=" + id );
 
 	}
@@ -207,6 +214,7 @@ public final class CameraServer extends Handler {
 				if (!((CallbackCookie)mCallbacks.getBroadcastCookie(i)).isConnected)
 				try {
 					//mUVCCamera.setFrameCallback(mCallbacks, UVCCamera.PIXEL_FORMAT_YUV);
+					mCallbacks.getBroadcastItem(i).onConnected();
 
 					((CallbackCookie)mCallbacks.getBroadcastCookie(i)).isConnected = true;
 
