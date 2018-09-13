@@ -84,6 +84,12 @@ public class UVCService extends BaseService {
 				date0_index++;
 			}
 		}
+
+		@Override
+		public void onConnected(int camera) {
+			callback(0);
+
+		}
 	};
 
 
@@ -104,7 +110,29 @@ public class UVCService extends BaseService {
 
 			}
 		}
+
+		@Override
+		public void onConnected(int camera) {
+			callback(1);
+		}
 	};
+
+
+	void callback(int camera) {
+		final int N = mCallbacks.beginBroadcast();
+		Log.d(TAG,"onConnected callback N is : " + N + "camera = " + camera);
+		for (int i=0; i<N; i++) {
+			Log.d(TAG,"inner for");
+			try {
+				mCallbacks.getBroadcastItem(i).onConnected(camera);
+
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		mCallbacks.finishBroadcast();
+	}
 
 	void callback(byte[] data,int camera) {
     	Log.d(TAG, "data length="+data.length);
@@ -365,7 +393,7 @@ public class UVCService extends BaseService {
 			server0.connect();
 			Log.d(TAG,"serviceId0 ,  is : " + serviceId0 + " , " );
 
-		/*	UsbDevice device1 = list.get(1);
+			UsbDevice device1 = list.get(1);
 			final int serviceId1 = device1.hashCode();
 			Log.d(TAG,"before getCameraServer serviceId1");
 			final CameraServer server1 = getCameraServer(serviceId1);
@@ -376,7 +404,7 @@ public class UVCService extends BaseService {
 				throw new IllegalArgumentException("invalid serviceId");
 			}
 			server1.connect();
-			Log.d(TAG,"serviceId1 ,  is : " + serviceId1 + " , " );*/
+			Log.d(TAG,"serviceId1 ,  is : " + serviceId1 + " , " );
 
             return 0;
 		}
@@ -432,7 +460,7 @@ public class UVCService extends BaseService {
 
 			}
 			//return serviceId;
-			/*Log.d(TAG,"before device1");
+			Log.d(TAG,"before device1");
 			UsbDevice device1 = list.get(1);
 			final int serviceId1 = device1.hashCode();
 			CameraServer server1 = null;
@@ -463,7 +491,7 @@ public class UVCService extends BaseService {
 				mCallbacks.register(cb);
 				server1.setThreadCallback(mIFrameCallback_Obj_R);
 
-			}*/
+			}
 
 
 		}

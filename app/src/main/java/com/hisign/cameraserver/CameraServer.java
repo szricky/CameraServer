@@ -210,11 +210,12 @@ public final class CameraServer extends Handler {
 		if (DEBUG) Log.d(TAG, "processOnCameraStart:");
 		try {
 			final int n = mCallbacks.beginBroadcast();
+			Log.d(TAG,"N = " + n);
 			for (int i = 0; i < n; i++) {
 				if (!((CallbackCookie)mCallbacks.getBroadcastCookie(i)).isConnected)
 				try {
 					//mUVCCamera.setFrameCallback(mCallbacks, UVCCamera.PIXEL_FORMAT_YUV);
-					mCallbacks.getBroadcastItem(i).onConnected();
+					//mCallbacks.getBroadcastItem(i).onConnected(i);
 
 					((CallbackCookie)mCallbacks.getBroadcastCookie(i)).isConnected = true;
 
