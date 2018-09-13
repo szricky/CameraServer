@@ -70,6 +70,8 @@ public final class CameraServer extends Handler {
     private int mRegisteredCallbackCount;
 
 	private RendererHolder mRendererHolder;
+	private RendererHolder mRendererHolder1;
+
 	private final WeakReference<CameraThread> mWeakThread;
 
 	public static CameraServer createServer(final Context context, final UsbControlBlock ctrlBlock, final int vid, final int pid) {
@@ -84,6 +86,8 @@ public final class CameraServer extends Handler {
 		mWeakThread = new WeakReference<CameraThread>(thread);
 		mRegisteredCallbackCount = 0;
 		mRendererHolder = new RendererHolder(mFrameWidth, mFrameHeight, mRenderHolderCallback);
+		mRendererHolder1 = new RendererHolder(mFrameWidth, mFrameHeight, mRenderHolderCallback1);
+
 	}
 
 	@Override
@@ -129,19 +133,35 @@ public final class CameraServer extends Handler {
 			}
 		}
 	}
-	
+
 	public void connect() {
 		if (DEBUG) Log.d(TAG, "connect:");
 		final CameraThread thread = mWeakThread.get();
 		if (!thread.isCameraOpened()) {
 			sendMessage(obtainMessage(MSG_OPEN));
 			sendMessage(obtainMessage(MSG_PREVIEW_START, mFrameWidth, mFrameHeight, mRendererHolder.getSurface()));
+
 		} else {
 			if (DEBUG) Log.d(TAG, "already connected, just call callback");
 			processOnCameraStart();
 		}
 
 	}
+
+	public void connect1() {
+		if (DEBUG) Log.d(TAG, "connect1:");
+		final CameraThread thread = mWeakThread.get();
+		if (!thread.isCameraOpened()) {
+			sendMessage(obtainMessage(MSG_OPEN));
+			sendMessage(obtainMessage(MSG_PREVIEW_START, mFrameWidth, mFrameHeight, mRendererHolder1.getSurface()));
+
+		} else {
+			if (DEBUG) Log.d(TAG, "already connected, just call callback");
+			processOnCameraStart();
+		}
+
+	}
+
 /*
 	public void connectSlave() {
 		if (DEBUG) Log.d(TAG, "connectSlave:");
@@ -183,6 +203,12 @@ public final class CameraServer extends Handler {
 		if (DEBUG) Log.d(TAG, "addSurface:id=" + id +",surface=" + surface);
 		if (mRendererHolder != null)
 			mRendererHolder.addSurface(id, surface, isRecordable);
+	}
+
+	public void addSurface1(final int id, final Surface surface, final boolean isRecordable) {
+		if (DEBUG) Log.d(TAG, "addSurface1:id=" + id +",surface=" + surface);
+		if (mRendererHolder1 != null)
+			mRendererHolder1.addSurface(id, surface, isRecordable);
 	}
 
 
@@ -288,7 +314,29 @@ public final class CameraServer extends Handler {
 	}
 
 	private final RenderHolderCallback mRenderHolderCallback
-		= new RenderHolderCallback() {
+			= new RenderHolderCallback() {
+		@Override
+		public void onCreate(final Surface surface) {
+		}
+
+		@Override
+		public void onFrameAvailable() {
+			final CameraThread thread = mWeakThread.get();
+			if ((thread != null) && (thread.mVideoEncoder != null)) {
+				try {
+					thread.mVideoEncoder.frameAvailableSoon();
+				} catch (final Exception e) {
+					//
+				}
+			}
+		}
+
+		@Override
+		public void onDestroy() {
+		}
+	};
+	private final RenderHolderCallback mRenderHolderCallback1
+			= new RenderHolderCallback() {
 		@Override
 		public void onCreate(final Surface surface) {
 		}
@@ -310,6 +358,8 @@ public final class CameraServer extends Handler {
 		}
 	};
 
+	//  需要2个CameraThread
+
 	private static final class CameraThread extends Thread {
 		private static final String TAG_THREAD = "CameraThread";
 		private final Object mSync = new Object();
@@ -328,6 +378,8 @@ public final class CameraServer extends Handler {
 		 * for accessing UVC camera
 		 */
 		private volatile UVCCamera mUVCCamera;
+
+
 		/**
 		 * muxer for audio/video recording
 		 */

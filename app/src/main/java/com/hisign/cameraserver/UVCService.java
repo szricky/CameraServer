@@ -403,7 +403,7 @@ public class UVCService extends BaseService {
 				Log.d(TAG,"error getCameraServer serviceId1");
 				throw new IllegalArgumentException("invalid serviceId");
 			}
-			server1.connect();
+			server1.connect1();
 			Log.d(TAG,"serviceId1 ,  is : " + serviceId1 + " , " );
 
             return 0;
@@ -518,7 +518,14 @@ public class UVCService extends BaseService {
 
 		}
 
+		@Override
+		public void addSurface1(int serviceId, int id_surface, Surface surface, boolean isRecordable) throws RemoteException {
+			if (DEBUG) Log.d(TAG, "mBasicBinder#addSurface1:id=" + id_surface + ",surface=" + surface);
+			final CameraServer server = getCameraServer(serviceId);
+			if (server != null)
+				server.addSurface1(id_surface, surface, isRecordable);
 
+		}
 
 
 	};
