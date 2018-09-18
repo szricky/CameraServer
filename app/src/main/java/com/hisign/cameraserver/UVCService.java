@@ -64,6 +64,8 @@ public class UVCService extends BaseService {
 	private final byte[] data1 = new byte[460800];
 	private int date1_index ;
 
+	private final byte[] data_test = {0x01,0x012};
+
 	private IFrameCallback mIFrameCallback_Obj = new IFrameCallback() {
 
 		@Override
@@ -76,9 +78,9 @@ public class UVCService extends BaseService {
 				if (date0_index %2 == 0){//%2 ==0){
 					Log.d(TAG,"onFrame: remaining=" + frame.remaining() );
 					frame.get(data0, 0, frame.remaining());
-					//callback(data0, 0);
-					Log.d(TAG,"mVlCamera = " + mVlCamera);
-					callback(data0,mVlCamera);
+					callback(data0, 0);
+					//Log.d(TAG,"mVlCamera = " + mVlCamera);
+				//	callback(data0, mVlCamera);
 
 				}
 				date0_index++;
@@ -102,9 +104,9 @@ public class UVCService extends BaseService {
 				if (date1_index %2 == 0){//2 ==0){
 					Log.d(TAG,"111remaining is : " + frame.remaining() );
 					frame.get(data1, 0, frame.remaining());
-					//callback(data1, 1);
-					Log.d(TAG,"mIrCamera = " + mIrCamera);
-					callback(data1,mIrCamera);
+					callback(data1, 1);
+					//Log.d(TAG,"mIrCamera = " + mIrCamera);
+					//callback(data_test,mIrCamera);
 				}
 				date1_index++;
 
@@ -133,19 +135,22 @@ public class UVCService extends BaseService {
 		}
 		mCallbacks.finishBroadcast();
 	}
-
+    private TestPra pra = new TestPra();
 	void callback(byte[] data,int camera) {
-    	Log.d(TAG, "data length="+data.length);
+    //	Log.d(TAG, "data length="+data.length);
 
 		final int N = mCallbacks.beginBroadcast();
-		Log.d(TAG,"n is : " + N);
+		//Log.d(TAG,"n is : " + N);
 		for (int i=0; i<N; i++) {
-			Log.d(TAG,"inner for");
+			//Log.d(TAG,"inner for");
 			try {
 				if(data!=null&&data.length>0){
-					Log.d(TAG," getBroadcastItem1");
-					mCallbacks.getBroadcastItem(i).onFrame(data,camera);
-					Log.d(TAG," getBroadcastItem2");
+
+                    pra.setBytes(data);
+                    mCallbacks.getBroadcastItem(i).onFrame(pra ,camera);
+
+              //      	mCallbacks.getBroadcastItem(i).onFrame(data,camera);
+					data = null;
 
 
 				}
@@ -154,6 +159,8 @@ public class UVCService extends BaseService {
 				e.printStackTrace();
 			}
 		}
+
+
 		mCallbacks.finishBroadcast();
 	}
 
