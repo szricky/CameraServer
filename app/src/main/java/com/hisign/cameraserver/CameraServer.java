@@ -292,6 +292,9 @@ public final class CameraServer extends Handler {
 		case MSG_OPEN:
 			thread.handleOpen();
 			break;
+	/*	case MSG_OPEN_1:
+			thread.handleOpen1();
+			break;*/
 		case MSG_CLOSE:
 			thread.handleClose();
 			break;
