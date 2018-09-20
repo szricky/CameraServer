@@ -292,6 +292,9 @@ public final class CameraServer extends Handler {
 		case MSG_OPEN:
 			thread.handleOpen();
 			break;
+	/*	case MSG_OPEN_1:
+			thread.handleOpen1();
+			break;*/
 		case MSG_CLOSE:
 			thread.handleClose();
 			break;
@@ -388,7 +391,7 @@ public final class CameraServer extends Handler {
 
 
 		public void setIFrameCallback(IFrameCallback iFrameCallback_Obj){
-			mUVCCamera.setFrameCallback(iFrameCallback_Obj,UVCCamera.PIXEL_FORMAT_NV21);
+			mUVCCamera.setFrameCallback(iFrameCallback_Obj,UVCCamera.FRAME_FORMAT_MJPEG);//PIXEL_FORMAT_NV21);
 			Log.d(TAG,"Thread  setIFrameCallback");
 		//	mUVCCamera.setFrameCallback(mCallbacks, UVCCamera.PIXEL_FORMAT_YUV);
 		}
