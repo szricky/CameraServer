@@ -70,8 +70,7 @@ public class UVCService extends BaseService {
 
 		@Override
 		public void onFrame(ByteBuffer frame) {
-			//Log.d(TAG,"ByteBuffer onFrame " + frame.remaining());
-			//byte[] data = new byte[frame.remaining()];
+			Log.d(TAG,"ByteBuffer onFrame " + frame.remaining());
 			if (frame.remaining()>0)
 			{
 
