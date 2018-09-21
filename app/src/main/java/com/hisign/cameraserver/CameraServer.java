@@ -56,8 +56,8 @@ public final class CameraServer extends Handler {
 	private static final boolean DEBUG = true;
 	private static final String TAG = "CameraServer";
 
-	private static final int DEFAULT_WIDTH = 640;
-	private static final int DEFAULT_HEIGHT = 480;
+	private static final int DEFAULT_WIDTH = 480;//640;
+	private static final int DEFAULT_HEIGHT = 640;//480;
 	
 	private int mFrameWidth = DEFAULT_WIDTH, mFrameHeight = DEFAULT_HEIGHT;
 
