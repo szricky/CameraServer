@@ -73,15 +73,16 @@ public class UVCService extends BaseService {
 			Log.d(TAG,"ByteBuffer onFrame " + frame.remaining());
 			if (frame.remaining()>0)
 			{
-
-				if (date0_index %2 == 0){//%2 ==0){
+				frame.get(data0, 0, frame.remaining());
+				callback(data0, 0);
+			/*	if (date0_index %2 == 0){//%2 ==0){
 					Log.d(TAG,"onFrame: remaining=" + frame.remaining() );
 					frame.get(data0, 0, frame.remaining());
 					callback(data0, 0);
 					//Log.d(TAG,"mVlCamera = " + mVlCamera);
 				//	callback(data0, mVlCamera);
 
-				}
+				}*/
 				date0_index++;
 			}
 		}
@@ -100,13 +101,15 @@ public class UVCService extends BaseService {
 			Log.d(TAG,"ByteBuffer onFrame");
 			if (frame.remaining() > 0)
 			{
-				if (date1_index %2 == 0){//2 ==0){
+				frame.get(data1, 0, frame.remaining());
+				callback(data1, 1);
+			/*	if (date1_index %2 == 0){//2 ==0){
 					Log.d(TAG,"111remaining is : " + frame.remaining() );
 					frame.get(data1, 0, frame.remaining());
 					callback(data1, 1);
 					//Log.d(TAG,"mIrCamera = " + mIrCamera);
 					//callback(data_test,mIrCamera);
-				}
+				}*/
 				date1_index++;
 
 			}
